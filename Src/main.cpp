@@ -26,8 +26,9 @@ void chooseGood(cv::Mat descriptor,std::vector<cv::DMatch> matches, std::vector<
     // --------------------------------------------
     for (auto &it: matches)
     {
-        std::cout << it.distance << ", " << std::endl; 
+        std::cout << it.distance << ", "; 
     }
+    std::cout << std::endl; 
 	std::vector<cv::DMatch> goodMatches;
     int cnt = 0;
     for (int i=0; i < 6; i++)
@@ -122,8 +123,12 @@ void detection_demo01()
 
     // -----------------
     std::vector<cv::DMatch> goodMatches1, goodMatches2, symMatches;
+    std::cout << "chooseGood start" << std::endl;
 	chooseGood(des1, matches, goodMatches1);
 	chooseGood(des2, matches, goodMatches2);
+    std::cout << "chooseGood start" << std::endl;
+    std::cout << "goodMatches2[0].distance: " ;
+    // std::cout<< goodMatches2[0].distance << std::endl;
 
     std::vector<cv::Point2f> match_point1;
     std::vector<cv::Point2f> match_point2;
@@ -134,14 +139,14 @@ void detection_demo01()
 
     for (auto &it: goodMatches1)
     {
-        std::cout << "add " << std::endl;
+        std::cout << "add pt!!" << std::endl;
         std::cout << it.queryIdx << std::endl;
         match_point1.push_back(kp1[it.queryIdx].pt);
         match_point2.push_back(kp2[it.trainIdx].pt);
     }
 
     // TODO
-    cv::Mat h = cv::findHomography(match_point1, match_point2);
+    cv::Mat h = cv::findHomography(match_point1, match_point2, cv::RANSAC);
     std::cout << "findhomo: h" << h << std::endl;
 }
 
