@@ -8,21 +8,37 @@
 
 void chooseGood(cv::Mat descriptor,std::vector<cv::DMatch> matches, std::vector<cv::DMatch> good_match)
 {
-	double max_dist = 0; double min_dist = 10;
-	 for( int i = 0; i < descriptor.rows; i++ )
-		{ double dist = matches[i].distance;
-		  if( dist < min_dist ) 
-			  min_dist = dist;
-		  if( dist > max_dist ) 
-			  max_dist = dist;
-	    }
+	double max_dist = 5; double min_dist = 0.1;
+	//  for( int i = 0; i < descriptor.rows; i++ )
+	// 	{ double dist = matches[i].distance;
+	// 	  if( dist < min_dist ) 
+	// 		  min_dist = dist;
+	// 	  if( dist > max_dist ) 
+	// 		  max_dist = dist;
+	//     }
+	// std::vector<cv::DMatch> goodMatches;
+	// for(int i=0; i <descriptor.rows;i++)
+	// {
+	// 	if(matches[i].distance<3*min_dist)
+	// 		goodMatches.push_back(matches[i]);
+	// }
+    // good_match = goodMatches;
+    // --------------------------------------------
+    for (auto &it: matches)
+    {
+        std::cout << it.distance << ", " << std::endl; 
+    }
 	std::vector<cv::DMatch> goodMatches;
-	for(int i=0; i <descriptor.rows;i++)
-	{
-		if(matches[i].distance<3*min_dist)
-			goodMatches.push_back(matches[i]);
-	}
-    good_match = goodMatches;
+    int cnt = 0;
+    for (int i=0; i < 6; i++)
+    {
+        std::cout << "---- add ---" << std::endl; 
+        goodMatches.push_back(matches[i]);
+        cnt++;
+        if (cnt == 4) break;
+
+    }
+    // --------------------------------------------
 }
 
 
@@ -118,13 +134,15 @@ void detection_demo01()
 
     for (auto &it: goodMatches1)
     {
+        std::cout << "add " << std::endl;
         std::cout << it.queryIdx << std::endl;
-        // match_point1.push_back(kp1[it.queryIdx]);
-        // match_point1.push_back(kp2[it.trainIdx]);
+        match_point1.push_back(kp1[it.queryIdx].pt);
+        match_point2.push_back(kp2[it.trainIdx].pt);
     }
 
     // TODO
-    // cv::Mat h = cv::findHomography(goodMatches1, goodMatches2);
+    cv::Mat h = cv::findHomography(match_point1, match_point2);
+    std::cout << "findhomo: h" << h << std::endl;
 }
 
 
@@ -144,13 +162,11 @@ void save_matrix(std::string file_name, cv::Mat matrix)
     }
 }
 
+
 int main()
 {
     // detection("test");
     detection_demo01();
     std::cout << "hello world" << std::endl;
 
-    
 }
-
-
