@@ -70,6 +70,7 @@ make install
 
 [公式 document](http://ceres-solver.org/installation.html), 
 [参考記事1](https://qiita.com/keita-n-ac/items/06f4214c7ae3292c5e44)
+[参考記事2](https://ltslam-doc.readthedocs.io/en/latest/tutorial/ceres/ceres_solver_tutorial.html)
 
 ```
 apt-get install -y libgoogle-glog-dev libgflags-dev

@@ -26,3 +26,34 @@ target_link_libraries( mosaic
     Ceres::ceres
     ${OpenCV_LIBS}
 )
+
+target_include_directories( mosaic
+    PUBLIC ${PROJECT_SOURCE_DIR}/include
+)
+
+# ---------
+add_executable(diff
+bg_diff.cpp
+)
+
+target_link_libraries( diff
+    Eigen3::Eigen
+    Ceres::ceres
+    ${OpenCV_LIBS}
+)
+
+target_include_directories( diff
+    PUBLIC ${PROJECT_SOURCE_DIR}/include
+)
+
+
+# -- blending
+# add_executable(blending
+#     blending.cpp
+# )
+
+# target_link_libraries( blending
+#     Eigen3::Eigen
+#     Ceres::ceres
+#     ${OpenCV_LIBS}
+# )

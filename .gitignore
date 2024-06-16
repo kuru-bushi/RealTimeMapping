@@ -3,3 +3,4 @@ ceres-bin
 ceres-solver
 opencv
 opencv-bin
+opencv*
