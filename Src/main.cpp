@@ -12,30 +12,48 @@ void chooseGood(const std::vector<cv::DMatch> matches, std::vector<cv::DMatch> &
     std::cout << "--------------chooseGood()-----------" << std::endl;
 	double max_dist = 40; double min_dist = 0.1;
     // --------------------------------------------
-    int cnt=0;
+    // int cnt=0;
     for (auto &it: matches)
     {
         if (it.distance < max_dist)
         {
             good_match.push_back(it);
-            cnt++;
+            // cnt++;
         }
     }
-    std::cout << cnt << std::endl;
+    // std::cout << cnt << std::endl;
 }
 
-
-void detection(const std::string type)
+std::vector<int> agsort(const std::vector<cv::DMatch> &array)
 {
-    std::string path_img1 = "/home/panda1.png";
-    std::string path_img2 = "/home/panda2.png";
+    // // 配列のインデックス indiecs = {0, 1, 2, 3, 4} を作成する。
+    std::vector<int> indices(array.size());
+    std::iota(indices.begin(), indices.end(), 0);
+
+    // ソートする。
+    std::sort(indices.begin(), indices.end(), [&array](size_t i1, size_t i2) {
+        return array[i1].distance < array[i2].distance;
+    });
+    return indices;
+}
+
+void detection(const std::string path_img1, 
+               const std::string path_img2,
+               std::vector<cv::KeyPoint> &kp1,
+               std::vector<cv::KeyPoint> &kp2,
+               cv::Mat &des1,
+               cv::Mat &des2,
+               std::vector<cv::DMatch> &good_matches)
+{
+    // std::string path_img1 = "/home/panda1.png";
+    // std::string path_img2 = "/home/panda2.png";
 
     cv::Mat img1 = cv::imread(path_img1);
     cv::Mat img2 = cv::imread(path_img2);
 
     auto detector = cv::SIFT::create();
-    std::vector<cv::KeyPoint> kp1, kp2;
-    cv::Mat des1, des2;
+    // std::vector<cv::KeyPoint> kp1, kp2;
+    // cv::Mat des1, des2;
     // std::vector<cv::KeyPoint> kp2;
     // cv::OutputArray des2;
 
@@ -53,14 +71,13 @@ void detection(const std::string type)
 
 
     double max_dist = 0.0, min_dist = 10.0;
-    std::vector<cv::DMatch> good_matches;
-    for (int i = 0; i < matches.size(); i++)
+    // std::vector<cv::DMatch> good_matches;
+    auto match_index = agsort(matches);
+    for (int i=0; i<5;i++)
     {
-        if (matches[i].distance <= 2 * min_dist)
-        {
-            good_matches.push_back(matches[i]);
-        }
+        good_matches.push_back(matches[match_index[i]]);
     }
+
 
     cv::Mat img_matches;
     cv::drawMatches(img1, kp1, img2, kp2, good_matches, img_matches
@@ -169,28 +186,60 @@ void good_kp(const std::vector<cv::KeyPoint> &kp1,
 }
 
 
-void get_homography(const std::vector<cv::Point2f> good_kp1, const std::vector<cv::Point2f> good_kp2, cv::Mat &pair_kp)
+void get_homography(const std::vector<cv::Point2f> good_kp1, const std::vector<cv::Point2f> good_kp2,
+ cv::Mat &pair_kp)
 {
     std::cout << "---------------- get_homography() ---------------- " << std::endl;
     cv::findHomography(good_kp1, good_kp2, pair_kp, cv::RANSAC, 3);
 }
 
+void get_homography(
+    const std::vector<cv::KeyPoint> kp1, 
+    const std::vector<cv::KeyPoint> kp2, 
+    const std::vector<cv::DMatch> good_matches,
+    std::vector<cv::Point2f> &match_point_pre,
+    std::vector<cv::Point2f> &match_point2_next,
+    cv::Mat &homo_mat
+)
+{
+    // std::vector<cv::Point2f> match_point_pre, match_point2_next;
+    for (auto &it: good_matches)
+    {
+        match_point_pre.push_back(kp1[it.queryIdx].pt);
+        match_point2_next.push_back(kp2[it.trainIdx].pt);
+    }
+    std::vector<std::vector<cv::Point2f>> wrap_pre, wrap_next;
+
+    // cv::Mat homo_mat;
+    cv::findHomography(match_point_pre, match_point2_next, homo_mat, cv::RANSAC, 3);
+}
+
 int main()
 {
+    // std::vector<cv::KeyPoint> kp1, kp2;
+    // cv::Mat des1, des2;
+    std::string path_img1 = "/home/panda1.png";
+    std::string path_img2 = "/home/panda2.png";
+
+     
     std::vector<cv::KeyPoint> kp1, kp2;
     cv::Mat des1, des2;
-    std::vector<cv::DMatch> matches;
-    detection_demo01(kp1, kp2, des1, des2, matches);
-
     std::vector<cv::DMatch> good_matches;
-    chooseGood(matches, good_matches);
+    detection(path_img1, path_img2, kp1, kp2, des1, des2, good_matches);
 
-    std::vector<cv::Point2f> good_kp1, good_kp2;
-    good_kp(kp1, kp2, good_matches, good_kp1, good_kp2);
+    // TODO homography 探す
+    std::vector<cv::Point2f> match_point_pre, match_point2_next;
+    cv::Mat homo_mat;
+    get_homography(kp1, kp2, good_matches,  match_point_pre, match_point2_next, homo_mat);
+    
+    // TODO blend
+    // 
 
-    cv::Mat pair_kp;
-    get_homography(good_kp1, good_kp2, pair_kp);
+    
 
-    // std::cout << "pair_kp :" << pair_kp << std::endl;
+
+
+
+
 
 }
