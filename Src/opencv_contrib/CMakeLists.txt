@@ -8,11 +8,20 @@ find_package( OpenCV REQUIRED )
 
 
 # --- 確認用 ----
-add_executable(HomoTest
-    HomoTest.cpp
+# add_executable(HomoTest
+#     HomoTest.cpp
+# )
+
+# target_link_libraries( HomoTest
+#     Eigen3::Eigen
+#     ${OpenCV_LIBS}
+# )
+# --- Object Tracking ----
+add_executable(TestTracking
+    Tracking.cpp
 )
 
-target_link_libraries( HomoTest
+target_link_libraries( TestTracking
     Eigen3::Eigen
     ${OpenCV_LIBS}
 )
