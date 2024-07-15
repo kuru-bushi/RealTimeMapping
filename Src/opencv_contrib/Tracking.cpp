@@ -40,8 +40,8 @@ int main()
         }
     }
     std::cout << "contours.size(); " << contours.size() << std::endl;
-
     // 参考: https://geekyisawesome.blogspot.com/2019/07/recognising-simple-shapes-with-opencv.html
+    // 参考2: https://cvtech.cc/count/4/
 
     // auto mu = cv::moments(contours[area_id[0]]);
     auto mu = cv::moments(img, false);
@@ -56,17 +56,18 @@ int main()
 
     // for (int idx=0; idx<contours.size(); idx++)
     // {
+    std::cout << "img.rows, img.cols" << img.rows << "," << img.cols << std::endl;
+    for (int area_idx=0; area_idx < area_id.size(); area_idx++)
+    {
         // auto count=contours[idx];
-        auto m = cv::moments(contours[idx]);
-        x += m.m10 / m.m00;
-        y += m.m01 / m.m00;
-            // x+=contours.at(i).at(j).x;
-            // y+=contours.at(i).at(j).y;
+        auto m = cv::moments(contours[area_id[area_idx]]);
+        x = m.m10 / m.m00;
+        y = m.m01 / m.m00;
+        // x+=contours.at(i).at(j).x;
+        // y+=contours.at(i).at(j).y;
         std::cout << "area end" <<x << ", " << y << std::endl;
-    // }
-    // x/=count;
-    // y/=count;
-    cv::circle(img, cv::Point(x,y),10, cv::Scalar(0,0,200),10,4);
+        cv::circle(img, cv::Point(x,y),5, cv::Scalar(0,0,200),2,4);
+    }
 
     std::string save_path2 = "/home/ikeda/VisualSlam/RealTimeMapping/ob_test2.jpg";
     cv::imwrite(save_path2, img);
