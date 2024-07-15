@@ -13,19 +13,22 @@ int main()
 
     auto img = cv::imread(path1);
     auto img_copy = img.clone();
-    cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
-    cv::threshold(img, img, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
+    cv::Mat img_gray;
+    cv::cvtColor(img, img_gray, cv::COLOR_BGR2GRAY);
+    cv::threshold(img_gray, img_gray, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
     std::cout << "start" << std::endl;
 
     std::vector<std::vector<cv::Point>> contours;
 
-    cv::findContours(img, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
+    cv::findContours(img_gray, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
     std::cout << "start" << std::endl;
     std::vector<std::vector<cv::Point>> contours_subset;
 
 
     cv::imwrite(save_path, img);
     std::cout << "save_path: " << save_path;
+    save_path = "/home/ikeda/VisualSlam/RealTimeMapping/ob_gray.jpg";
+    cv::imwrite(save_path, img_gray);
 
     std::cout << "start" << std::endl;
 
@@ -43,8 +46,8 @@ int main()
     // 参考: https://geekyisawesome.blogspot.com/2019/07/recognising-simple-shapes-with-opencv.html
     // 参考2: https://cvtech.cc/count/4/
 
-    // auto mu = cv::moments(contours[area_id[0]]);
-    auto mu = cv::moments(img, false);
+    auto mu = cv::moments(contours[area_id[0]]);
+    // auto mu = cv::moments(img_gray, false);
     auto mc = cv::Point2f(mu.m10 / mu.m00 , mu.m01 / mu.m00 );
     // cv::circle(img, mc, 4, cv::Scalar(100), 2, 4);
 
